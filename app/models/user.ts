@@ -1,33 +1,44 @@
 import { DateTime } from 'luxon'
 import hash from '@adonisjs/core/services/hash'
 import { compose } from '@adonisjs/core/helpers'
-import { BaseModel, column } from '@adonisjs/lucid/orm'
+import { BaseModel, column, beforeSave } from '@adonisjs/lucid/orm'
 import { withAuthFinder } from '@adonisjs/auth/mixins/lucid'
 import { DbAccessTokensProvider } from '@adonisjs/auth/access_tokens'
 
 const AuthFinder = withAuthFinder(() => hash.use('scrypt'), {
-  uids: ['email'],
-  passwordColumnName: 'password',
+  uids: ['user_email'],
+  passwordColumnName: 'user_password',
 })
+
+export enum UserRole {
+  BARBER = 'barber',
+  CUSTOMER = 'customer',
+}
 
 export default class User extends compose(BaseModel, AuthFinder) {
   @column({ isPrimary: true })
-  declare id: number
+  declare user_id: number
 
   @column()
-  declare fullName: string | null
+  declare user_name: string | null
 
   @column()
-  declare email: string
+  declare user_email: string
 
   @column({ serializeAs: null })
-  declare password: string
+  declare user_password: string
+
+  @column()
+  declare user_role: UserRole
+
+  @column()
+  declare user_status: boolean
 
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime
 
   @column.dateTime({ autoCreate: true, autoUpdate: true })
-  declare updatedAt: DateTime | null
+  declare updatedAt: DateTime
 
   static accessTokens = DbAccessTokensProvider.forModel(User)
 }
