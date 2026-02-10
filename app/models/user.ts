@@ -16,6 +16,8 @@ export enum UserRole {
 }
 
 export default class User extends compose(BaseModel, AuthFinder) {
+  static primaryKey = 'user_id'
+
   @column({ isPrimary: true })
   declare user_id: number
 
