@@ -11,7 +11,9 @@ export default class UsersController {
 
       await User.create(data)
 
-      return { message: 'Registro bem sucedido' }
+      return response.ok({
+        message: 'Registro bem sucedido',
+      })
     } catch (error) {
       return response.badRequest({
         message: 'Erro ao criar usuário',
