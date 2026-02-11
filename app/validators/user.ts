@@ -11,7 +11,7 @@ export const registerUserValidator = vine.compile(
       .trim()
       .unique({ table: 'users', column: 'user_email' }),
 
-    user_password: vine.string().minLength(6),
+    user_password: vine.string().minLength(6).trim(),
   })
 )
 
@@ -19,6 +19,6 @@ export const loginUserValidator = vine.compile(
   vine.object({
     user_email: vine.string().email().normalizeEmail().trim(),
 
-    user_password: vine.string(),
+    user_password: vine.string().trim(),
   })
 )
