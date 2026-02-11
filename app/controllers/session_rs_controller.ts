@@ -16,6 +16,8 @@ export default class SessionRsController {
       sameSite: 'lax',
       path: '/',
     })
+
+    return response.ok({})
   }
 
   async destroy({ response, auth }: HttpContext) {
