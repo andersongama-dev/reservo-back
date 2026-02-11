@@ -1,7 +1,6 @@
 import User from '#models/user'
-import { loginUserValidator, registerUserValidator } from '#validators/user'
+import { registerUserValidator } from '#validators/user'
 import type { HttpContext } from '@adonisjs/core/http'
-//import hash from '@adonisjs/core/services/hash'
 
 export default class UsersController {
   async index({}: HttpContext) {}
@@ -20,41 +19,42 @@ export default class UsersController {
     }
   }
 
-  async login({ request, response }: HttpContext) {
-    try {
-      const data = await request.validateUsing(loginUserValidator)
+  async show({ auth }: HttpContext) {
+    const user = auth.user
 
-      const user = await User.verifyCredentials(data.user_email, data.user_password)
-
-      await User.accessTokens.create(user)
-
-      return {
-        message: 'Login bem sucedido',
-      }
-    } catch (error) {
-      return response.internalServerError({
-        message: 'Não foi possivel realizar o login',
-      })
+    return {
+      user: user,
     }
   }
 
-  /**
-   * Show individual record
-   */
-  // async show({ params }: HttpContext) {}
+  async edit({ auth, request, response }: HttpContext) {
+    const user = auth.user
 
-  /**
-   * Edit individual record
-   */
-  // async edit({ params }: HttpContext) {}
+    if (!user) {
+      return response.unauthorized({ message: 'Não autenticado' })
+    }
 
-  /**
-   * Handle form submission for the edit action
-   */
-  // async update({ params, request }: HttpContext) {}
+    const data = request.only(['user_name', 'user_email', 'user_password', 'user_role'])
 
-  /**
-   * Delete record
-   */
-  // async destroy({ params }: HttpContext) {}
+    user.merge(data)
+    await user.save()
+
+    return response.ok(user)
+  }
+
+  async destroy({ auth, response }: HttpContext) {
+    const user = auth.user
+
+    if (!user) {
+      return response.unauthorized({ message: 'Não autenticado' })
+    }
+
+    user.merge({
+      user_status: false,
+    })
+
+    await user.save()
+
+    return response.ok({ message: 'Usuário desativado com sucesso' })
+  }
 }
