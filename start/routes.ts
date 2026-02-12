@@ -19,5 +19,6 @@ router.delete('/logout', [SessionRsController, 'destroy']).use(middleware.auth()
 router
   .group(() => {
     router.get('/me', [UsersController, 'show'])
+    router.patch('/edit', [UsersController, 'edit'])
   })
   .use(middleware.auth())
