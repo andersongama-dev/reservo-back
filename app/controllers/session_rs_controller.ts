@@ -10,14 +10,11 @@ export default class SessionRsController {
 
     const token = await User.accessTokens.create(user)
 
-    response.cookie('access_token', token.value!.release(), {
-      httpOnly: true,
-      secure: false,
-      sameSite: 'lax',
-      path: '/',
-    })
+    const rawToken = token.value!.release()
 
-    return response.ok({})
+    return response.ok({
+      token: rawToken,
+    })
   }
 
   async destroy({ response, auth }: HttpContext) {

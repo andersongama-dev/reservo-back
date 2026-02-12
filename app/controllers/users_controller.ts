@@ -9,10 +9,20 @@ export default class UsersController {
     try {
       const data = await request.validateUsing(registerUserValidator)
 
-      await User.create(data)
+      const user = await User.create(data)
+
+      if (!user) {
+        return response.badRequest({
+          message: 'Erro ao encontrar usuario',
+        })
+      }
+
+      const token = await User.accessTokens.create(user)
+
+      const rawToken = token.value!.release()
 
       return response.ok({
-        message: 'Registro bem sucedido',
+        token: rawToken,
       })
     } catch (error) {
       return response.badRequest({
@@ -41,7 +51,9 @@ export default class UsersController {
     user.merge(data)
     await user.save()
 
-    return response.ok(user)
+    return response.ok({
+      user: user,
+    })
   }
 
   async destroy({ auth, response }: HttpContext) {
