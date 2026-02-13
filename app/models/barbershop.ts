@@ -9,6 +9,12 @@ export default class Barbershop extends BaseModel {
   declare barbershop_name: string
 
   @column()
+  declare barbershop_phone: string
+
+  @column()
+  declare barbershop_city: string
+
+  @column()
   declare barbershop_status: boolean
 
   @column()

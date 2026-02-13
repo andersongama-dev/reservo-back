@@ -7,7 +7,9 @@ export default class extends BaseSchema {
     this.schema.createTable(this.tableName, (table) => {
       table.increments('barbershop_id')
       table.string('barbershop_name')
-      table.boolean('barbershop_status')
+      table.string('barbershop_phone').unique
+      table.string('barbershop_city')
+      table.boolean('barbershop_status').defaultTo(true)
       table.string('invitation_code').notNullable().unique()
       table.timestamps(true, true)
     })
