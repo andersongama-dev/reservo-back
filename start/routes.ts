@@ -3,6 +3,7 @@ import UsersController from '#controllers/users_controller'
 import User from '#models/user'
 import router from '@adonisjs/core/services/router'
 import { middleware } from './kernel.js'
+import BarbersController from '#controllers/barbers_controller'
 
 router.get('/', async () => {
   const user = await User.all()
@@ -20,5 +21,6 @@ router
   .group(() => {
     router.get('/me', [UsersController, 'show'])
     router.patch('/edit', [UsersController, 'edit'])
+    router.post('/barber', [BarbersController, 'store'])
   })
   .use(middleware.auth())

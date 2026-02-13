@@ -1,18 +1,15 @@
 import { DateTime } from 'luxon'
 import { BaseModel, column } from '@adonisjs/lucid/orm'
 
-export default class Barber extends BaseModel {
+export default class Barbershop extends BaseModel {
   @column({ isPrimary: true })
-  declare barber_id: number
-
-  @column()
-  declare user_id: number
-
-  @column()
   declare barbershop_id: number
 
   @column()
-  declare barber_function: string
+  declare barbershop_name: string
+
+  @column()
+  declare barbershop_status: boolean
 
   @column()
   declare invitation_code: string
