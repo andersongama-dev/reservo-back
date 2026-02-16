@@ -41,4 +41,34 @@ export default class ServicesController {
       return response.created({})
     }
   }
+
+  async listServices({ auth, response }: HttpContext) {
+    const user = auth.user
+
+    if (!user) {
+      return response.unauthorized({
+        message: 'Não autenticado!',
+      })
+    }
+
+    const barber = await Barber.findBy('user_id', user.user_id)
+
+    if (barber == null) {
+      return response.unauthorized({
+        message: 'Você não é um barberio',
+      })
+    }
+
+    if (barber.barber_function == 'owner') {
+      const barbershop = await Barbershop.findBy('barbershop_id', barber.barbershop_id)
+
+      if (barbershop != null) {
+        const services = await Service.query().where('barbershop_id', barbershop.barbershop_id)
+
+        return response.ok({
+          services: services,
+        })
+      }
+    }
+  }
 }
