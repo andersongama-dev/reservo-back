@@ -26,5 +26,6 @@ router
     router.post('/barber', [BarbersController, 'store'])
     router.post('/barbershop', [BarbershopsController, 'store'])
     router.post('/service', [ServicesController, 'store'])
+    router.get('/service/all', [ServicesController, 'listServices'])
   })
   .use(middleware.auth())
