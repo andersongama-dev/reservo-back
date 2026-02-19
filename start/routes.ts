@@ -17,15 +17,18 @@ router.get('/', async () => {
 
 router.post('/register', [UsersController, 'store'])
 router.post('/login', [SessionRsController, 'store'])
-router.delete('/logout', [SessionRsController, 'destroy']).use(middleware.auth())
 
 router
   .group(() => {
     router.get('/me', [UsersController, 'show'])
     router.patch('/edit', [UsersController, 'edit'])
+    router.delete('/logout', [SessionRsController, 'destroy'])
     router.post('/barber', [BarbersController, 'store'])
     router.post('/barbershop', [BarbershopsController, 'store'])
     router.post('/service', [ServicesController, 'store'])
     router.get('/service/all', [ServicesController, 'listServices'])
+    router.patch('/service/update', [ServicesController, 'update'])
+    router.patch('/service/disable', [ServicesController, 'disable'])
+    router.delete('/service/delete/:id', [ServicesController, 'delete'])
   })
   .use(middleware.auth())
