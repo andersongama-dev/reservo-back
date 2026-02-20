@@ -1,8 +1,6 @@
 import Barber from '#models/barber'
 import Barbershop from '#models/barbershop'
 import Service from '#models/service'
-import User from '#models/user'
-import auth from '@adonisjs/auth/services/main'
 import { HttpContext } from '@adonisjs/core/http'
 
 export default class ServicesController {

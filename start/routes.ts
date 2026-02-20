@@ -6,6 +6,7 @@ import { middleware } from './kernel.js'
 import BarbersController from '#controllers/barbers_controller'
 import BarbershopsController from '#controllers/barbershops_controller'
 import ServicesController from '#controllers/services_controller'
+import InvitationsController from '#controllers/invitations_controller'
 
 router.get('/', async () => {
   const user = await User.all()
@@ -30,5 +31,6 @@ router
     router.patch('/service/update', [ServicesController, 'update'])
     router.patch('/service/disable', [ServicesController, 'disable'])
     router.delete('/service/delete/:id', [ServicesController, 'delete'])
+    router.post('invitation', [InvitationsController, 'store'])
   })
   .use(middleware.auth())
