@@ -33,7 +33,7 @@ export default class BarbershopsController {
 
     const barber = await Barber.findBy('user_id', user.user_id)
 
-    if (barber == null) {
+    if (!barber) {
       return response.unauthorized({
         message: 'Você não é um barberio',
       })
