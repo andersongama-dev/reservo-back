@@ -11,6 +11,7 @@ export default class extends BaseSchema {
       table.string('user_password').notNullable()
       table.enum('user_role', ['barber', 'customer']).notNullable().defaultTo('customer')
       table.boolean('user_status').notNullable().defaultTo(true)
+      table.boolean('onboarding_completed').defaultTo(false)
 
       table.timestamps(true, true)
     })

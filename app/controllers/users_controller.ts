@@ -11,19 +11,19 @@ export default class UsersController {
 
       const user = await User.create(data)
 
-      if (!user) {
-        return response.badRequest({
-          message: 'Erro ao encontrar usuario',
-        })
-      }
-
       const token = await User.accessTokens.create(user)
-
       const rawToken = token.value!.release()
 
-      return response.ok({
-        token: rawToken,
-      })
+      return response
+        .cookie('access_token', rawToken, {
+          httpOnly: true,
+          sameSite: 'lax',
+          secure: false,
+          path: '/',
+        })
+        .ok({
+          message: 'Usuário criado com sucesso',
+        })
     } catch (error) {
       return response.badRequest({
         message: 'Erro ao criar usuário',
@@ -34,8 +34,18 @@ export default class UsersController {
   async show({ auth }: HttpContext) {
     const user = auth.user
 
+    if (!user) {
+      return
+    }
+
     return {
-      user: user,
+      user: {
+        id: user.user_id,
+        name: user.user_name,
+        email: user.user_email,
+        role: user.user_role,
+        onboarding_completed: user.onboarding_completed,
+      },
     }
   }
 
@@ -70,5 +80,21 @@ export default class UsersController {
     await user.save()
 
     return response.ok({ message: 'Usuário desativado com sucesso' })
+  }
+
+  async onboarding({ auth, response }: HttpContext) {
+    const user = auth.user
+
+    if (!user) {
+      return response.unauthorized({ message: 'Não autenticado' })
+    }
+
+    user.merge({
+      onboarding_completed: true,
+    })
+
+    await user.save()
+
+    return response.ok({ message: 'Onboarding concluido com sucesso' })
   }
 }
