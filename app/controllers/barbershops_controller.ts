@@ -60,4 +60,61 @@ export default class BarbershopsController {
 
     return response.created({})
   }
+
+  async show({ auth, response }: HttpContext) {
+    const user = auth.user
+
+    if (!user) {
+      return response.unauthorized({ message: 'Não auteticado' })
+    }
+
+    const barber = await Barber.findBy('user_id', user.user_id)
+
+    if (!barber || barber.barber_function !== 'owner') {
+      return response.unauthorized({
+        message: 'Você não tem autoização',
+      })
+    }
+
+    const barbershop = await Barbershop.findBy('barbershop_id', barber.barbershop_id)
+
+    if (!barbershop) {
+      return response.notFound('Babearia não encotrada')
+    }
+
+    return response.ok({
+      barber: barbershop,
+    })
+  }
+
+  async edit({ auth, request, response }: HttpContext) {
+    const user = auth.user
+
+    if (!user) {
+      return response.unauthorized({ message: 'Não auteticado' })
+    }
+
+    const data = request.only([
+      'barbershop_id',
+      'barbershop_name',
+      'barbershop_phone',
+      'barbershop_city',
+    ])
+
+    const barbershop = await Barbershop.findBy('barbershop_id', data.barbershop_id)
+
+    if (!barbershop) {
+      return response.notFound('Babearia não encotrada')
+    }
+
+    barbershop.merge({
+      barbershop_name: data.barbershop_name,
+      barbershop_phone: data.barbershop_phone,
+      barbershop_city: data.barbershop_city,
+    })
+
+    await barbershop.save()
+
+    return response.ok({})
+  }
 }

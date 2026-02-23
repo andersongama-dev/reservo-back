@@ -6,7 +6,6 @@ export default class InjectAuthFromCookieMiddleware {
     const token = ctx.request.cookie('access_token')
 
     if (token) {
-      // injeta no lugar onde o guard procura
       ctx.request.headers()['authorization'] = `Bearer ${token}`
     }
 
