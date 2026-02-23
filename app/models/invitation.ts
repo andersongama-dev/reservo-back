@@ -1,5 +1,7 @@
 import { DateTime } from 'luxon'
-import { BaseModel, column } from '@adonisjs/lucid/orm'
+import { BaseModel, column, belongsTo } from '@adonisjs/lucid/orm'
+import type { BelongsTo } from '@adonisjs/lucid/types/relations'
+import Barber from '#models/barber'
 
 export enum By {
   BARBER = 'barber',
@@ -21,6 +23,11 @@ export default class Invitation extends BaseModel {
 
   @column()
   declare invitation_status: boolean
+
+  @belongsTo(() => Barber, {
+    foreignKey: 'barber_id',
+  })
+  declare barber: BelongsTo<typeof Barber>
 
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime

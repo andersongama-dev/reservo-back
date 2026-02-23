@@ -42,4 +42,22 @@ export default class BarbersController {
 
     return response.created({})
   }
+
+  async myfunction({ auth, response }: HttpContext) {
+    const user = auth.user
+
+    if (!user) {
+      return response.unauthorized('Não autenticado')
+    }
+
+    const barber = await Barber.findBy('user_id', user.user_id)
+
+    if (!barber) {
+      return response.unauthorized('Você não é um barbeiro')
+    }
+
+    return response.ok({
+      barber_function: barber.barber_function,
+    })
+  }
 }

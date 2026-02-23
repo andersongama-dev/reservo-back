@@ -9,12 +9,18 @@ export default class SessionRsController {
     const user = await User.verifyCredentials(data.user_email, data.user_password)
 
     const token = await User.accessTokens.create(user)
-
     const rawToken = token.value!.release()
 
-    return response.ok({
-      token: rawToken,
-    })
+    return response
+      .cookie('access_token', rawToken, {
+        httpOnly: true,
+        sameSite: 'lax',
+        secure: false,
+        path: '/',
+      })
+      .ok({
+        message: 'Login efetuado com sucesso',
+      })
   }
 
   async destroy({ response, auth }: HttpContext) {

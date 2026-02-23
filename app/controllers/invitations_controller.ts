@@ -59,4 +59,42 @@ export default class InvitationsController {
       })
     }
   }
+
+  async bybarbershop({ auth, response }: HttpContext) {
+    const user = auth.user
+
+    if (!user) {
+      return response.unauthorized({ message: 'Não auteticado' })
+    }
+
+    const barber = await Barber.findBy('user_id', user.user_id)
+
+    if (!barber) {
+      return response.unauthorized({
+        message: 'Você não é um barberio',
+      })
+    }
+
+    if (barber.barber_function !== 'owner') {
+      return response.unauthorized('Você não pode ver convites')
+    }
+
+    const barbershop = await Barbershop.find(barber.barbershop_id)
+
+    if (!barbershop) {
+      return response.notFound('Babearia não encotrada')
+    }
+
+    const invitations = await Invitation.query()
+      .where('barbershop_id', barbershop.barbershop_id)
+      .where('invitation_by', 'barber')
+      .where('invitation_status', true)
+      .preload('barber', (query) => {
+        query.preload('user')
+      })
+
+    return response.ok({
+      invitations,
+    })
+  }
 }
