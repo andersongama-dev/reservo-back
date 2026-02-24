@@ -37,5 +37,6 @@ router
     router.delete('/service/delete/:id', [ServicesController, 'delete'])
     router.post('/invitation', [InvitationsController, 'store'])
     router.get('/invitation/bybarbershop', [InvitationsController, 'bybarbershop'])
+    router.get('/invitation/bybarber', [InvitationsController, 'bybarber'])
   })
   .use(middleware.auth())
