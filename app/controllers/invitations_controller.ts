@@ -97,4 +97,92 @@ export default class InvitationsController {
       invitations,
     })
   }
+
+  async bybarber({ auth, response }: HttpContext) {
+    const user = auth.user
+
+    if (!user) {
+      return response.unauthorized({ message: 'Não auteticado' })
+    }
+
+    const barber = await Barber.findBy('user_id', user.user_id)
+
+    if (!barber) {
+      return response.unauthorized({
+        message: 'Você não é um barberio',
+      })
+    }
+
+    const invitations = await Invitation.query()
+      .where('barber_id', barber.barber_id)
+      .where('invitation_by', 'barbershop')
+      .where('invitation_status', true)
+      .preload('barber', (query) => {
+        query.preload('user')
+      })
+
+    return response.ok({
+      invitations,
+    })
+  }
+
+  async acceptinvitation({ auth, request, response }: HttpContext) {
+    const user = auth.user
+
+    if (!user) {
+      return response.unauthorized({ message: 'Não auteticado' })
+    }
+
+    const barber = await Barber.findBy('user_id', user.user_id)
+
+    if (!barber) {
+      return response.unauthorized({
+        message: 'Você não é um barberio',
+      })
+    }
+
+    const data = request.only(['invitation_id'])
+
+    const invitation = await Invitation.findBy(data.invitation_id)
+
+    if (!invitation) {
+      return response.notFound('Convite não encotrado')
+    }
+
+    invitation.merge({
+      invitation_status: false,
+    })
+
+    invitation.save()
+
+    return response.ok({
+      message: 'Convite aceito',
+    })
+  }
+
+  async rejectintation({ auth, params, response }: HttpContext) {
+    const user = auth.user
+
+    if (!user) {
+      return response.unauthorized({ message: 'Não auteticado' })
+    }
+
+    const barber = await Barber.findBy('user_id', user.user_id)
+
+    if (!barber) {
+      return response.unauthorized({
+        message: 'Você não é um barberio',
+      })
+    }
+
+    const invitation = await Invitation.find(params.id)
+
+    if (!invitation) {
+      return response.notFound('Convite não encotrado')
+    }
+
+    await invitation.delete()
+
+    return response.ok('Serviço deletado com sucesso')
+  }
 }
