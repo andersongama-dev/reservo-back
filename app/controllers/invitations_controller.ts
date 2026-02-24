@@ -58,6 +58,8 @@ export default class InvitationsController {
         barber_id: barberByCode.barber_id,
       })
     }
+
+    return response.created({ message: 'Convite criado com sucesso' })
   }
 
   async bybarbershop({ auth, response }: HttpContext) {
@@ -133,7 +135,45 @@ export default class InvitationsController {
       return response.unauthorized({ message: 'Não auteticado' })
     }
 
-    const barber = await Barber.findBy('user_id', user.user_id)
+    const data = request.only(['invitation_id'])
+
+    const invitation = await Invitation.find(data.invitation_id)
+
+    if (!invitation) {
+      return response.notFound('Convite não encotrado')
+    }
+
+    if (invitation.invitation_status === false) {
+      return response.badRequest({
+        message: 'Convite já processado',
+      })
+    }
+
+    const barberAuth = await Barber.findBy('user_id', user.user_id)
+
+    if (!barberAuth) {
+      return response.unauthorized({
+        message: 'Você não tem relação com o convite',
+      })
+    }
+
+    if (invitation.invitation_by === 'barbershop') {
+      if (barberAuth.barber_id !== invitation.barber_id) {
+        return response.unauthorized('Você não pode aceitar este convite')
+      }
+    }
+
+    if (invitation.invitation_by === 'barber') {
+      if (barberAuth.barber_function !== 'owner') {
+        return response.unauthorized('Apenas o proprietário pode aceitar')
+      }
+
+      if (barberAuth.barbershop_id !== invitation.barbershop_id) {
+        return response.unauthorized('Você não pertence a esta barbearia')
+      }
+    }
+
+    const barber = await Barber.find(invitation.barber_id)
 
     if (!barber) {
       return response.unauthorized({
@@ -141,19 +181,23 @@ export default class InvitationsController {
       })
     }
 
-    const data = request.only(['invitation_id'])
+    const barbershop = await Barbershop.find(invitation.barbershop_id)
 
-    const invitation = await Invitation.findBy(data.invitation_id)
-
-    if (!invitation) {
-      return response.notFound('Convite não encotrado')
+    if (!barbershop) {
+      return response.notFound('Barbearia não encotrada')
     }
 
     invitation.merge({
       invitation_status: false,
     })
 
-    invitation.save()
+    await invitation.save()
+
+    barber.merge({
+      barbershop_id: barbershop.barbershop_id,
+    })
+
+    await barber.save()
 
     return response.ok({
       message: 'Convite aceito',
@@ -179,6 +223,30 @@ export default class InvitationsController {
 
     if (!invitation) {
       return response.notFound('Convite não encotrado')
+    }
+
+    const barberAuth = await Barber.findBy('user_id', user.user_id)
+
+    if (!barberAuth) {
+      return response.unauthorized({
+        message: 'Você não tem relação com o convite',
+      })
+    }
+
+    if (invitation.invitation_by === 'barbershop') {
+      if (barberAuth.barber_id !== invitation.barber_id) {
+        return response.unauthorized('Você não pode aceitar este convite')
+      }
+    }
+
+    if (invitation.invitation_by === 'barber') {
+      if (barberAuth.barber_function !== 'owner') {
+        return response.unauthorized('Apenas o proprietário pode aceitar')
+      }
+
+      if (barberAuth.barbershop_id !== invitation.barbershop_id) {
+        return response.unauthorized('Você não pertence a esta barbearia')
+      }
     }
 
     await invitation.delete()

@@ -38,5 +38,7 @@ router
     router.post('/invitation', [InvitationsController, 'store'])
     router.get('/invitation/bybarbershop', [InvitationsController, 'bybarbershop'])
     router.get('/invitation/bybarber', [InvitationsController, 'bybarber'])
+    router.patch('/invitation/accept', [InvitationsController, 'acceptinvitation'])
+    router.delete('/invitation/:id', [InvitationsController, 'rejectintation'])
   })
   .use(middleware.auth())
