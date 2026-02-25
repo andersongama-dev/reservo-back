@@ -42,5 +42,6 @@ router
     router.patch('/invitation/accept', [InvitationsController, 'acceptinvitation'])
     router.delete('/invitation/:id', [InvitationsController, 'rejectintation'])
     router.get('employee/all', [EmployeesController, 'all'])
+    router.delete('employee/dismiss/:id', [EmployeesController, 'dismiss'])
   })
   .use(middleware.auth())
