@@ -11,7 +11,7 @@ export default class Barber extends BaseModel {
   declare user_id: number
 
   @column()
-  declare barbershop_id: number
+  declare barbershop_id: number | null
 
   @column()
   declare barber_function: string
