@@ -19,7 +19,7 @@ export default class ServicesController {
       return response.unauthorized({ message: 'Você não é um barbeiro' })
     }
 
-    const barbershop = await Barbershop.find(barber.barber_id)
+    const barbershop = await Barbershop.findBy('barbershop_id', barber.barbershop_id)
 
     if (barbershop != null) {
       await Service.create({
