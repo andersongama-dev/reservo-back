@@ -8,6 +8,7 @@ import BarbershopsController from '#controllers/barbershops_controller'
 import ServicesController from '#controllers/services_controller'
 import InvitationsController from '#controllers/invitations_controller'
 import EmployeesController from '#controllers/employees_controller'
+import SchedulingsController from '#controllers/schedulings_controller'
 
 router.get('/', async () => {
   const user = await User.all()
@@ -43,5 +44,7 @@ router
     router.delete('/invitation/:id', [InvitationsController, 'rejectintation'])
     router.get('employee/all', [EmployeesController, 'all'])
     router.delete('employee/dismiss/:id', [EmployeesController, 'dismiss'])
+    router.post('/scheduling', [SchedulingsController, 'store'])
+    router.get('/scheduling/all', [SchedulingsController, 'listSchedulings'])
   })
   .use(middleware.auth())
